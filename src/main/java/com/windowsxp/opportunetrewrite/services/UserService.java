@@ -15,12 +15,8 @@ public class UserService {
     private final UserRepository userRepository;
 
     public User getUserById(Long id) {
-        Optional<User> optUser = userRepository.findById(id);
-        if (!optUser.isPresent()) {
-            throw new UserNotFoundException("User with id " + id + " is not found");
-        }
-
-        return optUser.get();
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
     }
 
     public List<User> getAllUsers() {
@@ -31,22 +27,18 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User updateUser(Long id, User user) {
-        Optional<User> optUser = userRepository.findById(id);
-        if (!optUser.isPresent()) {
-            throw new UserNotFoundException("User with id " + id + " is not found");
-        }
+    public User updateUser(Long id, User updatedUser) {
+       userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
 
-        user.setId(id);
+       updatedUser.setId(id);
 
-        return userRepository.save(user);
+        return userRepository.save(updatedUser);
     }
 
     public void deleteUser(Long id) {
-        Optional<User> optUser = userRepository.findById(id);
-        if (!optUser.isPresent()) {
-            throw new UserNotFoundException("User with id " + id + " is not found");
-        }
+        userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
 
         userRepository.deleteById(id);
     }
