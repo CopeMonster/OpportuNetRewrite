@@ -1,0 +1,16 @@
+application:
+  jwt-secret: OpportuNet
+  jwt-expiration-time: 86400000
+spring:
+  application:
+    name: OpportuNetRewrite
+  datasource:
+    url: jdbc:postgresql://localhost:5434/opportunet_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
