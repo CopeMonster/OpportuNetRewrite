@@ -33,6 +33,9 @@ public class Vacancy {
     )
     private List<Student> responders = new ArrayList<>();
 
+    @OneToOne(mappedBy = "vacancy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private VacancyDetail vacancyDetail;
+
     public void addResponder(Student student) {
         responders.add(student);
         student.getRespondedVacancies().add(this);

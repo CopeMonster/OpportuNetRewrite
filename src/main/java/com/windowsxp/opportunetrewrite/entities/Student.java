@@ -36,6 +36,9 @@ public class Student extends User {
     @ManyToMany(mappedBy = "responders")
     private List<Vacancy> respondedVacancies = new ArrayList<>();
 
+    @OneToOne(mappedBy = "student", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private CV cv;
+
     public void applyVacancy(Vacancy vacancy) {
         respondedVacancies.add(vacancy);
         vacancy.getResponders().add(this);
