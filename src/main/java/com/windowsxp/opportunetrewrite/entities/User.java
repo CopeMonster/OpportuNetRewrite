@@ -1,10 +1,8 @@
 package com.windowsxp.opportunetrewrite.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import net.minidev.json.annotate.JsonIgnore;
 
 import java.time.LocalDateTime;
@@ -15,6 +13,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -31,12 +30,24 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<>();
 
-    @Column(name = "create_at", nullable = false)
-    private LocalDateTime createAt = LocalDateTime.now();
+    @Column(name = "create_at", nullable = false, updatable = false)
+    private LocalDateTime createAt;
 
     @Column(name = "update_at", nullable = false)
-    private LocalDateTime updateAt = LocalDateTime.now();
+    private LocalDateTime updateAt;
+
+    @PrePersist
+    public void onCreate() {
+        createAt = LocalDateTime.now();
+        updateAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        updateAt = LocalDateTime.now();
+    }
 }

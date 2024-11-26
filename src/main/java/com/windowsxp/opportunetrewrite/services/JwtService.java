@@ -1,6 +1,5 @@
 package com.windowsxp.opportunetrewrite.services;
 
-import com.windowsxp.opportunetrewrite.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -9,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,8 +38,7 @@ public class JwtService {
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSignKey())
-                .build()
-                .parseUnsecuredClaims(token)
+                .build().parseSignedClaims(token)
                 .getPayload();
     }
 
@@ -50,7 +48,8 @@ public class JwtService {
 
     public boolean validateToken(String token, UserDetails userDetails) {
         final String email = extractEmail(token);
-        return (email.equals(userDetails.getUsername()) && isTokenExpired(token));
+
+        return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
     public String generateToken(String email) {
@@ -69,6 +68,6 @@ public class JwtService {
     }
 
     private SecretKey getSignKey() {
-        return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(Base64.getDecoder().decode(jwtSecret));
     }
 }

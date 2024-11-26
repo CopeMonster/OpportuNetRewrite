@@ -1,6 +1,9 @@
 application:
-  jwt-secret: OpportuNet
+  admin-email: "admin@gmail.com"
+  admin-password: "admin123"
+  jwt-secret: 7390fae56e2d2a3b8f8b773c3a5425dd4203157483590daf2a5ded9f70b22562
   jwt-expiration-time: 86400000
+
 spring:
   application:
     name: OpportuNetRewrite
@@ -12,5 +15,5 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
-
+server:
+  port: 8080

@@ -21,8 +21,21 @@ public class CompanyService {
                 .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
     }
 
+    public Company getCompanyByEmail(String email) {
+        return companyRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User with email " + email + " is not found"));
+    }
+
     public List<Company> getAllCompanies() {
         return companyRepository.findAll();
+    }
+
+    public Company saveCompany(Company company) {
+        return companyRepository.save(company);
+    }
+
+    public boolean isCompanyExistByEmail(String email) {
+        return companyRepository.existsByEmail(email);
     }
 
     public CompanyDetail updateCompanyDetail(Long id, CompanyDetail updatedDetail) {

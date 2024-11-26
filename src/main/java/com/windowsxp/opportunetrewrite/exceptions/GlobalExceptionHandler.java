@@ -1,8 +1,6 @@
 package com.windowsxp.opportunetrewrite.exceptions;
 
-import com.windowsxp.opportunetrewrite.exceptions.custom.CVNotFoundException;
-import com.windowsxp.opportunetrewrite.exceptions.custom.UserNotFoundException;
-import com.windowsxp.opportunetrewrite.exceptions.custom.VacancyNotFoundException;
+import com.windowsxp.opportunetrewrite.exceptions.custom.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +39,26 @@ public class GlobalExceptionHandler {
         errorDetails.put("timestamp", LocalDateTime.now());
         errorDetails.put("message", ex.getMessage());
         errorDetails.put("details", "CV not found exception");
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
+    }
+
+    @ExceptionHandler(UserExistException.class)
+    public ResponseEntity<Map<String, Object>> handleUserExistException(UserExistException ex) {
+        Map<String, Object> errorDetails = new HashMap<>();
+        errorDetails.put("timestamp", LocalDateTime.now());
+        errorDetails.put("message", ex.getMessage());
+        errorDetails.put("details", "User exista exception");
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
+    }
+
+    @ExceptionHandler(RoleNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleRoleNotFoundException(RoleNotFoundException ex) {
+        Map<String, Object> errorDetails = new HashMap<>();
+        errorDetails.put("timestamp", LocalDateTime.now());
+        errorDetails.put("message", ex.getMessage());
+        errorDetails.put("details", "Role not found exception");
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
     }
