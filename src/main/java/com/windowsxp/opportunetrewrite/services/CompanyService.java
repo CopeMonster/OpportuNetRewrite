@@ -4,6 +4,7 @@ import com.windowsxp.opportunetrewrite.entities.Company;
 import com.windowsxp.opportunetrewrite.entities.CompanyDetail;
 import com.windowsxp.opportunetrewrite.entities.Student;
 import com.windowsxp.opportunetrewrite.entities.StudentDetail;
+import com.windowsxp.opportunetrewrite.exceptions.custom.CompanyNotFoundException;
 import com.windowsxp.opportunetrewrite.exceptions.custom.UserNotFoundException;
 import com.windowsxp.opportunetrewrite.repositories.CompanyRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,10 @@ public class CompanyService {
         return companyRepository.save(company);
     }
 
+    public boolean isCompanyExistById(Long id) {
+        return companyRepository.existsById(id);
+    }
+
     public boolean isCompanyExistByEmail(String email) {
         return companyRepository.existsByEmail(email);
     }
@@ -53,5 +58,13 @@ public class CompanyService {
         companyRepository.save(company);
 
         return companyDetail;
+    }
+
+    public void deleteCompany(Long id) {
+        if (!isCompanyExistById(id)) {
+            throw new CompanyNotFoundException("Company with id " + id + " is not found");
+        }
+
+        companyRepository.deleteById(id);
     }
 }
