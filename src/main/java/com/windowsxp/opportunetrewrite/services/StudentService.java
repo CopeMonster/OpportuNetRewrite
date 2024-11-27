@@ -66,21 +66,22 @@ public class StudentService {
 
         updates.forEach((key, value) -> {
             switch (key) {
-                case "aboutMe":
+                case "aboutMe" -> {
                     studentDetail.setAboutMe((String) value);
-                    break;
-                case "skills":
+                }
+                case "skills" -> {
                     if (value instanceof List) {
                         studentDetail.setSkills((List<String>) value);
                     } else {
                         throw new IllegalArgumentException("Invalid data type for skills");
                     }
-                    break;
-                case "profilePic":
+                }
+                case "profilePic" -> {
                     studentDetail.setProfilePic((String) value);
-                    break;
-                default:
+                }
+                default -> {
                     throw new IllegalArgumentException("Unknown field: " + key);
+                }
             }
         });
 

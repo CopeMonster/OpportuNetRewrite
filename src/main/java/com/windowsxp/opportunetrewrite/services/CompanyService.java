@@ -4,16 +4,20 @@ import com.windowsxp.opportunetrewrite.entities.Company;
 import com.windowsxp.opportunetrewrite.entities.CompanyDetail;
 import com.windowsxp.opportunetrewrite.exceptions.custom.CompanyNotFoundException;
 import com.windowsxp.opportunetrewrite.exceptions.custom.UserNotFoundException;
+import com.windowsxp.opportunetrewrite.repositories.CompanyDetailsRepository;
 import com.windowsxp.opportunetrewrite.repositories.CompanyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class CompanyService {
     private final CompanyRepository companyRepository;
+    private final CompanyDetailsRepository companyDetailsRepository;
 
     public Company getCompanyById(Long id) {
         return companyRepository.findById(id)
@@ -41,7 +45,7 @@ public class CompanyService {
         return companyRepository.existsByEmail(email);
     }
 
-    public CompanyDetail updateCompanyDetail(Long id, CompanyDetail updatedDetail) {
+    public CompanyDetail updateCompanyDetail(Long id, Map<String, Object> updates) {
         Company company = companyRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
         CompanyDetail companyDetail = company.getCompanyDetail();
@@ -50,10 +54,21 @@ public class CompanyService {
             throw new IllegalStateException("Company with id " + id + " does not have associated details.");
         }
 
-        companyDetail.setDescription(updatedDetail.getDescription());
-        companyDetail.setContactEmail(updatedDetail.getContactEmail());
+        updates.forEach((key, value) -> {
+            switch (key) {
+                case "description" -> {
+                    companyDetail.setDescription((String) value);
+                }
+                case "contactEmail" -> {
+                    companyDetail.setContactEmail((String) value);
+                }
+                default -> {
+                    throw new IllegalArgumentException("Unknown field: " + key);
+                }
+            }
+        });
 
-        companyRepository.save(company);
+        companyDetailsRepository.save(companyDetail);
 
         return companyDetail;
     }
