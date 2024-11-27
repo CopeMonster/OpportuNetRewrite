@@ -3,19 +3,21 @@ package com.windowsxp.opportunetrewrite.services;
 import com.windowsxp.opportunetrewrite.entities.Student;
 import com.windowsxp.opportunetrewrite.entities.StudentDetail;
 import com.windowsxp.opportunetrewrite.exceptions.custom.UserNotFoundException;
+import com.windowsxp.opportunetrewrite.repositories.StudentDetailsRepository;
 import com.windowsxp.opportunetrewrite.repositories.StudentRepository;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class StudentService {
     private final StudentRepository studentRepository;
+    private final StudentDetailsRepository studentDetailsRepository;
 
     public Student getStudentById(Long id) {
         return studentRepository.findById(id)
@@ -25,6 +27,10 @@ public class StudentService {
     public Student getStudentByEmail(String email) {
         return studentRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User with email " + email + " is not found"));
+    }
+
+    public boolean isStudentExistById(Long id) {
+        return studentRepository.existsById(id);
     }
 
     public boolean isStudentExistByEmail(String email) {
@@ -39,7 +45,17 @@ public class StudentService {
         return studentRepository.save(student);
     }
 
-    public StudentDetail updateStudentDetail(Long id, StudentDetail updatedDetail) {
+    @Transactional
+    public void deleteStudent(Long id) {
+        if (!isStudentExistById(id)) {
+            throw new UserNotFoundException("User with id " + id + " is not found");
+        }
+
+        studentRepository.deleteById(id);
+    }
+
+    @Transactional
+    public StudentDetail updateStudentDetail(Long id, Map<String, Object> updates) {
         Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
         StudentDetail studentDetail = student.getStudentDetail();
@@ -48,11 +64,27 @@ public class StudentService {
             throw new IllegalStateException("Student with id " + id + " does not have associated details.");
         }
 
-        studentDetail.setAboutMe(updatedDetail.getAboutMe());
-        studentDetail.setSkills(updatedDetail.getSkills());
-        studentDetail.setProfilePic(updatedDetail.getProfilePic());
+        updates.forEach((key, value) -> {
+            switch (key) {
+                case "aboutMe":
+                    studentDetail.setAboutMe((String) value);
+                    break;
+                case "skills":
+                    if (value instanceof List) {
+                        studentDetail.setSkills((List<String>) value);
+                    } else {
+                        throw new IllegalArgumentException("Invalid data type for skills");
+                    }
+                    break;
+                case "profilePic":
+                    studentDetail.setProfilePic((String) value);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown field: " + key);
+            }
+        });
 
-        studentRepository.save(student);
+        studentDetailsRepository.save(studentDetail);
 
         return studentDetail;
     }
