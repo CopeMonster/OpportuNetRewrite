@@ -31,11 +31,11 @@ Opportu.Net - это сервис, который предостовляет в�
 * ✅ GET: /{companyId}/vacancies - список вакансий компании
 
 #### Vacancies
-* GET: /vacancies/{vacancyId} - страница вакансии
-* GET: /vacancies - все вакансии
-* POST: /vacancies - создать вакансию
-* PUT: /vacancies/{vacancyId} - редактировать вакансию
-* DELETE: /vacancies/{vacancyId} - удаление вакансии
+* ✅ GET: /vacancies/{vacancyId} - страница вакансии
+* ✅ GET: /vacancies - все вакансии
+* ✅ POST: /vacancies - создать вакансию
+* PATCH: /vacancies/{vacancyId} - редактировать вакансию
+* ✅ DELETE: /vacancies/{vacancyId} - удаление вакансии
 * GET: /vacancies/{vacancyId}/responders - список откликнувшихся студентов
 * POST: /vacancies/{vacancyId}/respond - откликнуться на вакансию
 * POST: /vacancies/{vacancyId}/cancelRespond - отменить отклик на вакансию

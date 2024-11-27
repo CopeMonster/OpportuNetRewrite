@@ -23,6 +23,7 @@ public class UserController {
     private final UserModelAssembler userModelAssembler;
 
     @GetMapping("/{userId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public EntityModel<User> getUserById(@PathVariable Long userId) {
         User user = userService.getUserById(userId);
 
@@ -30,6 +31,7 @@ public class UserController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public CollectionModel<EntityModel<User>> getAllUsers() {
         List<EntityModel<User>> users = userService.getAllUsers()
                 .stream()

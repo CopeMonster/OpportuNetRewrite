@@ -1,11 +1,14 @@
 package com.windowsxp.opportunetrewrite.services;
 
+import com.windowsxp.opportunetrewrite.entities.CV;
 import com.windowsxp.opportunetrewrite.entities.Student;
 import com.windowsxp.opportunetrewrite.entities.StudentDetail;
+import com.windowsxp.opportunetrewrite.entities.Vacancy;
 import com.windowsxp.opportunetrewrite.exceptions.custom.UserNotFoundException;
 import com.windowsxp.opportunetrewrite.repositories.StudentDetailsRepository;
 import com.windowsxp.opportunetrewrite.repositories.StudentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +32,16 @@ public class StudentService {
                 .orElseThrow(() -> new UserNotFoundException("User with email " + email + " is not found"));
     }
 
+    public List<Vacancy> getRespondedVacancies(Long id, String email) {
+        Student student = getStudentById(id);
+
+        if (!student.getEmail().equals(email)) {
+            throw new AccessDeniedException("You do not have permission to do this.");
+        }
+
+        return student.getRespondedVacancies();
+    }
+
     public boolean isStudentExistById(Long id) {
         return studentRepository.existsById(id);
     }
@@ -46,18 +59,26 @@ public class StudentService {
     }
 
     @Transactional
-    public void deleteStudent(Long id) {
-        if (!isStudentExistById(id)) {
-            throw new UserNotFoundException("User with id " + id + " is not found");
+    public void deleteStudent(Long id, String email) {
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
+
+        if (!student.getEmail().equals(email)) {
+            throw new AccessDeniedException("You do not have permission to do this.");
         }
 
         studentRepository.deleteById(id);
     }
 
     @Transactional
-    public StudentDetail updateStudentDetail(Long id, Map<String, Object> updates) {
+    public StudentDetail updateStudentDetail(Long id, Map<String, Object> updates, String email) {
         Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
+
+        if (!student.getEmail().equals(email)) {
+            throw new AccessDeniedException("You do not have permission to do this.");
+        }
+
         StudentDetail studentDetail = student.getStudentDetail();
 
         if (studentDetail == null) {
@@ -88,5 +109,16 @@ public class StudentService {
         studentDetailsRepository.save(studentDetail);
 
         return studentDetail;
+    }
+
+    public CV getCv(Long id, String email) {
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
+
+        if (!student.getEmail().equals(email)) {
+            throw new AccessDeniedException("You do not have permission to do this.");
+        }
+
+        return student.getCv();
     }
 }

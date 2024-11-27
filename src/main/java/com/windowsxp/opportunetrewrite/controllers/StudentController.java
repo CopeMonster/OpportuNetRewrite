@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,42 +52,56 @@ public class StudentController {
     }
 
     @PatchMapping("/{studentId}/details")
-    public ResponseEntity<StudentDetail> updateStudentDetails(@PathVariable Long studentId, @RequestBody Map<String, Object> updates) {
-        StudentDetail studentDetail = studentService.updateStudentDetail(studentId, updates);
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public ResponseEntity<StudentDetail> updateStudentDetails(
+            @PathVariable Long studentId,
+            @RequestBody Map<String, Object> updates,
+            @AuthenticationPrincipal UserDetails userDetails)
+    {
+        StudentDetail studentDetail = studentService.updateStudentDetail(studentId, updates, userDetails.getUsername());
 
         return ResponseEntity.ok(studentDetail);
     }
 
     @GetMapping("/{studentId}/cv")
-    public ResponseEntity<CV> getStudentCV(@PathVariable Long studentId) {
-        Student student = studentService.getStudentById(studentId);
-
-        CV cv = student.getCv();
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public ResponseEntity<CV> getStudentCV(
+            @PathVariable Long studentId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        CV cv = studentService.getCv(studentId, userDetails.getUsername());
 
         return ResponseEntity.ok(cv);
     }
 
     @PostMapping("/{studentId}/cv")
-    public ResponseEntity<CV> uploadStudentCV(@PathVariable Long studentId) {
-        Student student = studentService.getStudentById(studentId);
-
+    public ResponseEntity<CV> uploadStudentCV(
+            @PathVariable Long studentId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
         // TODO: implement upload logic
 
         return ResponseEntity.ok(null);
     }
 
     @DeleteMapping("/{studentId}")
-    public ResponseEntity<String> deleteStudent(@PathVariable Long studentId) {
-        studentService.deleteStudent(studentId);
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public ResponseEntity<String> deleteStudent(
+            @PathVariable Long studentId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        studentService.deleteStudent(studentId, userDetails.getUsername());
 
         return ResponseEntity.ok("Student with id " + studentId + " was deleted");
     }
 
     @GetMapping("/{studentId}/respondedVacancies")
-    public ResponseEntity<List<Vacancy>> getRespondedVacancies(@PathVariable Long studentId) {
-        Student student = studentService.getStudentById(studentId);
-
-        List<Vacancy> vacancies = student.getRespondedVacancies();
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public ResponseEntity<List<Vacancy>> getRespondedVacancies(
+            @PathVariable Long studentId,
+            @AuthenticationPrincipal UserDetails userDetails)
+    {
+        List<Vacancy> vacancies = studentService.getRespondedVacancies(studentId, userDetails.getUsername());
 
         return ResponseEntity.ok(vacancies);
     }

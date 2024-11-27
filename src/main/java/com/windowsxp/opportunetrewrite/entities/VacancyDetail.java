@@ -5,8 +5,13 @@ import com.windowsxp.opportunetrewrite.entities.enums.EmploymentType;
 import com.windowsxp.opportunetrewrite.entities.enums.ExperienceType;
 import com.windowsxp.opportunetrewrite.entities.enums.WorkScheduleType;
 import jakarta.persistence.*;
+import lombok.*;
 
-import java.time.LocalDateTime;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 
 @Entity
 @Table(name = "vacancy_details")
@@ -27,24 +32,22 @@ public class VacancyDetail {
     @Column(name = "requirements")
     private String requirements;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "employment_type", nullable = false)
     private EmploymentType employmentType;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "work_schedule_type", nullable = false)
     private WorkScheduleType workScheduleType;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "experience_type", nullable = false)
     private ExperienceType experienceType;
 
     @Column(name = "salary")
     private Float salary;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "currency")
     private Currency currency;
-
-    @Column(name = "create_at", nullable = false)
-    private LocalDateTime createAt = LocalDateTime.now();
-
-    @Column(name = "update_at", nullable = false)
-    private LocalDateTime updateAt = LocalDateTime.now();
 }

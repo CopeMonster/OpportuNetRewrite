@@ -2,11 +2,13 @@ package com.windowsxp.opportunetrewrite.services;
 
 import com.windowsxp.opportunetrewrite.entities.Company;
 import com.windowsxp.opportunetrewrite.entities.CompanyDetail;
+import com.windowsxp.opportunetrewrite.entities.Vacancy;
 import com.windowsxp.opportunetrewrite.exceptions.custom.CompanyNotFoundException;
 import com.windowsxp.opportunetrewrite.exceptions.custom.UserNotFoundException;
 import com.windowsxp.opportunetrewrite.repositories.CompanyDetailsRepository;
 import com.windowsxp.opportunetrewrite.repositories.CompanyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
@@ -45,9 +47,14 @@ public class CompanyService {
         return companyRepository.existsByEmail(email);
     }
 
-    public CompanyDetail updateCompanyDetail(Long id, Map<String, Object> updates) {
+    public CompanyDetail updateCompanyDetail(Long id, Map<String, Object> updates, String email) {
         Company company = companyRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
+
+        if (!company.getEmail().equals(email)) {
+            throw new AccessDeniedException("You do not have permission to do this.");
+        }
+
         CompanyDetail companyDetail = company.getCompanyDetail();
 
         if (companyDetail == null) {
@@ -73,11 +80,21 @@ public class CompanyService {
         return companyDetail;
     }
 
-    public void deleteCompany(Long id) {
-        if (!isCompanyExistById(id)) {
-            throw new CompanyNotFoundException("Company with id " + id + " is not found");
+    public void deleteCompany(Long id, String email) {
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
+
+        if (!company.getEmail().equals(email)) {
+            throw new AccessDeniedException("You do not have permission to do this.");
         }
 
         companyRepository.deleteById(id);
+    }
+
+    public List<Vacancy> getVacancies(Long id) {
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
+
+        return company.getVacancies();
     }
 }

@@ -10,6 +10,8 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,26 +55,33 @@ public class CompanyController {
     }
 
     @PatchMapping("/{companyId}/details")
-    public ResponseEntity<CompanyDetail> updateCompanyDetails(@PathVariable Long companyId, Map<String, Object> updates) {
-        Company company = companyService.getCompanyById(companyId);
-
-        CompanyDetail companyDetail = companyService.updateCompanyDetail(companyId, updates);
+    @PreAuthorize("hasRole('ROLE_COMPANY')")
+    public ResponseEntity<CompanyDetail> updateCompanyDetails(
+            @PathVariable Long companyId,
+            Map<String, Object> updates,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        CompanyDetail companyDetail =
+                companyService.updateCompanyDetail(companyId, updates, userDetails.getUsername());
 
         return ResponseEntity.ok(companyDetail);
     }
 
     @DeleteMapping("/{companyId}")
-    public ResponseEntity<String> deleteCompany(@PathVariable Long companyId) {
-        companyService.deleteCompany(companyId);
+    @PreAuthorize("hasRole('ROLE_COMPANY')")
+    public ResponseEntity<String> deleteCompany(
+            @PathVariable Long companyId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        companyService.deleteCompany(companyId, userDetails.getUsername());
 
         return ResponseEntity.ok("Company with id " + companyId + " was deleted");
     }
 
     @GetMapping("/{companyId}/vacancies")
-    public ResponseEntity<List<Vacancy>> getCompanyVacancies(@PathVariable Long companyId) {
-        Company company = companyService.getCompanyById(companyId);
-
-        List<Vacancy> vacancies = company.getVacancies();
+    public ResponseEntity<List<Vacancy>> getCompanyVacancies(
+            @PathVariable Long companyId
+    ) {
+        List<Vacancy> vacancies = companyService.getVacancies(companyId);
 
         return ResponseEntity.ok(vacancies);
     }

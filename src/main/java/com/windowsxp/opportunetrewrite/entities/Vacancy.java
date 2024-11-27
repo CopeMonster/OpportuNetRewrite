@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +37,12 @@ public class Vacancy {
     @OneToOne(mappedBy = "vacancy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private VacancyDetail vacancyDetail;
 
+    @Column(name = "create_at", nullable = false)
+    private LocalDateTime createAt;
+
+    @Column(name = "update_at", nullable = false)
+    private LocalDateTime updateAt;
+
     public void addResponder(Student student) {
         responders.add(student);
         student.getRespondedVacancies().add(this);
@@ -44,5 +51,16 @@ public class Vacancy {
     public void removeResponder(Student student) {
         responders.remove(student);
         student.getRespondedVacancies().remove(this);
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createAt = LocalDateTime.now();
+        this.updateAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updateAt = LocalDateTime.now();
     }
 }
