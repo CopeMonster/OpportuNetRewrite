@@ -3,9 +3,12 @@ package com.windowsxp.opportunetrewrite.controllers;
 import com.windowsxp.opportunetrewrite.assemblers.VacancyAssembler;
 import com.windowsxp.opportunetrewrite.dto.VacancyCreateRequest;
 import com.windowsxp.opportunetrewrite.entities.Company;
+import com.windowsxp.opportunetrewrite.entities.Student;
 import com.windowsxp.opportunetrewrite.entities.Vacancy;
+import com.windowsxp.opportunetrewrite.entities.VacancyDetail;
 import com.windowsxp.opportunetrewrite.services.CompanyService;
 import com.windowsxp.opportunetrewrite.services.VacancyService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -17,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/vacancies")
@@ -45,20 +49,39 @@ public class VacancyController {
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_COMPANY')")
-    public ResponseEntity<Vacancy> createVacancy(@RequestBody VacancyCreateRequest request, @AuthenticationPrincipal UserDetails userDetails) {
-        Company company = companyService.getCompanyByEmail(userDetails.getUsername());
-
-        Vacancy createdVacancy = vacancyService.createVacancy(request, company);
+    public ResponseEntity<Vacancy> createVacancy(
+            @Valid @RequestBody VacancyCreateRequest request,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Vacancy createdVacancy = vacancyService.createVacancy(request, userDetails.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdVacancy);
+    }
+
+    @PatchMapping("/{vacancyId}")
+    @PreAuthorize("hasRole('ROLE_COMPANY')")
+    public ResponseEntity<Vacancy> updateVacancy(
+            @PathVariable Long vacancyId,
+            @Valid @RequestBody Map<String, Object> updates,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        VacancyDetail vacancyDetail =
+                vacancyService.updateVacancyDetails(vacancyId, updates, userDetails.getUsername());
+
+        return ResponseEntity.ok(vacancyDetail.getVacancy());
     }
 
     @DeleteMapping("/{vacancyId}")
     @PreAuthorize("hasRole('ROLE_COMPANY')")
-    public ResponseEntity<String> deleteVacancy(@PathVariable Long vacancyId, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<String> deleteVacancy(
+            @PathVariable Long vacancyId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
         Company company = companyService.getCompanyByEmail(userDetails.getUsername());
 
         vacancyService.deleteVacancy(vacancyId, company);
 
         return ResponseEntity.ok("Company with id " + vacancyId + " was deleted");
     }
+
+
 }

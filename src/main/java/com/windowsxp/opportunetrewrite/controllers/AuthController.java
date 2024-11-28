@@ -2,6 +2,7 @@ package com.windowsxp.opportunetrewrite.controllers;
 
 import com.windowsxp.opportunetrewrite.dto.*;
 import com.windowsxp.opportunetrewrite.services.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,17 +17,17 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/sign-in")
-    public ResponseEntity<JwtResponseDTO> signIn(@RequestBody LogInRequestDTO authRequestDTO) {
+    public ResponseEntity<JwtResponseDTO> signIn(@Valid @RequestBody LogInRequestDTO authRequestDTO) {
         return ResponseEntity.ok(authService.login(authRequestDTO));
     }
 
     @PostMapping("/sign-up/student")
-    public ResponseEntity<UserSignUpResponse> studentSignUp(@RequestBody StudentSignUpRequestDTO dto) {
+    public ResponseEntity<UserSignUpResponse> studentSignUp(@Valid @RequestBody StudentSignUpRequestDTO dto) {
         return ResponseEntity.ok(authService.registerStudent(dto));
     }
 
     @PostMapping("/sign-up/company")
-    public ResponseEntity<UserSignUpResponse> companySignUp(@RequestBody CompanySignUpRequestDTO dto) {
+    public ResponseEntity<UserSignUpResponse> companySignUp(@Valid @RequestBody CompanySignUpRequestDTO dto) {
         return ResponseEntity.ok(authService.registerCompany(dto));
     }
 }

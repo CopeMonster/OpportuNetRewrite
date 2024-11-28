@@ -70,6 +70,13 @@ public class StudentService {
         studentRepository.deleteById(id);
     }
 
+    public StudentDetail getStudentDetail(Long id) {
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
+
+        return student.getStudentDetail();
+    }
+
     @Transactional
     public StudentDetail updateStudentDetail(Long id, Map<String, Object> updates, String email) {
         Student student = studentRepository.findById(id)
@@ -80,10 +87,6 @@ public class StudentService {
         }
 
         StudentDetail studentDetail = student.getStudentDetail();
-
-        if (studentDetail == null) {
-            throw new IllegalStateException("Student with id " + id + " does not have associated details.");
-        }
 
         updates.forEach((key, value) -> {
             switch (key) {
@@ -106,9 +109,7 @@ public class StudentService {
             }
         });
 
-        studentDetailsRepository.save(studentDetail);
-
-        return studentDetail;
+        return studentDetailsRepository.save(studentDetail);
     }
 
     public CV getCv(Long id, String email) {
@@ -121,4 +122,6 @@ public class StudentService {
 
         return student.getCv();
     }
+
+
 }

@@ -5,6 +5,7 @@ import com.windowsxp.opportunetrewrite.entities.Company;
 import com.windowsxp.opportunetrewrite.entities.CompanyDetail;
 import com.windowsxp.opportunetrewrite.entities.Vacancy;
 import com.windowsxp.opportunetrewrite.services.CompanyService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -45,27 +46,6 @@ public class CompanyController {
                 linkTo(methodOn(CompanyController.class).getCompanies()).withSelfRel());
     }
 
-    @GetMapping("/{companyId}/details")
-    public ResponseEntity<CompanyDetail> getCompanyDetails(@PathVariable Long companyId) {
-        Company company = companyService.getCompanyById(companyId);
-
-        CompanyDetail companyDetail = company.getCompanyDetail();
-
-        return ResponseEntity.ok(companyDetail);
-    }
-
-    @PatchMapping("/{companyId}/details")
-    @PreAuthorize("hasRole('ROLE_COMPANY')")
-    public ResponseEntity<CompanyDetail> updateCompanyDetails(
-            @PathVariable Long companyId,
-            Map<String, Object> updates,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        CompanyDetail companyDetail =
-                companyService.updateCompanyDetail(companyId, updates, userDetails.getUsername());
-
-        return ResponseEntity.ok(companyDetail);
-    }
-
     @DeleteMapping("/{companyId}")
     @PreAuthorize("hasRole('ROLE_COMPANY')")
     public ResponseEntity<String> deleteCompany(
@@ -75,6 +55,25 @@ public class CompanyController {
         companyService.deleteCompany(companyId, userDetails.getUsername());
 
         return ResponseEntity.ok("Company with id " + companyId + " was deleted");
+    }
+
+    @GetMapping("/{companyId}/details")
+    public ResponseEntity<CompanyDetail> getCompanyDetails(@PathVariable Long companyId) {
+        CompanyDetail companyDetail = companyService.getCompanyDetail(companyId);
+
+        return ResponseEntity.ok(companyDetail);
+    }
+
+    @PatchMapping("/{companyId}/details")
+    @PreAuthorize("hasRole('ROLE_COMPANY')")
+    public ResponseEntity<CompanyDetail> updateCompanyDetails(
+            @PathVariable Long companyId,
+            @Valid @RequestBody Map<String, Object> updates,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        CompanyDetail companyDetail =
+                companyService.updateCompanyDetail(companyId, updates, userDetails.getUsername());
+
+        return ResponseEntity.ok(companyDetail);
     }
 
     @GetMapping("/{companyId}/vacancies")

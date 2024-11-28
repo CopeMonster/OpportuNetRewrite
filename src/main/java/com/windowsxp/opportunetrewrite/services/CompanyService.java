@@ -47,6 +47,13 @@ public class CompanyService {
         return companyRepository.existsByEmail(email);
     }
 
+    public CompanyDetail getCompanyDetail(Long id) {
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
+
+        return company.getCompanyDetail();
+    }
+
     public CompanyDetail updateCompanyDetail(Long id, Map<String, Object> updates, String email) {
         Company company = companyRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
@@ -56,10 +63,6 @@ public class CompanyService {
         }
 
         CompanyDetail companyDetail = company.getCompanyDetail();
-
-        if (companyDetail == null) {
-            throw new IllegalStateException("Company with id " + id + " does not have associated details.");
-        }
 
         updates.forEach((key, value) -> {
             switch (key) {
@@ -75,9 +78,7 @@ public class CompanyService {
             }
         });
 
-        companyDetailsRepository.save(companyDetail);
-
-        return companyDetail;
+        return companyDetailsRepository.save(companyDetail);
     }
 
     public void deleteCompany(Long id, String email) {

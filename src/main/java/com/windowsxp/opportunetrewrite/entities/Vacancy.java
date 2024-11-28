@@ -1,10 +1,7 @@
 package com.windowsxp.opportunetrewrite.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,6 +11,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 
 @Entity
 @Table(name = "vacancies")
@@ -35,7 +33,8 @@ public class Vacancy {
     private List<Student> responders = new ArrayList<>();
 
     @OneToOne(mappedBy = "vacancy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private VacancyDetail vacancyDetail;
+    @Builder.Default
+    private VacancyDetail vacancyDetail = new VacancyDetail();
 
     @Column(name = "create_at", nullable = false)
     private LocalDateTime createAt;

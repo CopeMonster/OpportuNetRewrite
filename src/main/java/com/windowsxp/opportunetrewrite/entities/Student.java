@@ -30,7 +30,8 @@ public class Student extends User {
     private LocalDate dateOfBirth;
 
     @OneToOne(mappedBy = "student", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private StudentDetail studentDetail;
+    @Builder.Default
+    private StudentDetail studentDetail = new StudentDetail();
 
     @ManyToMany(mappedBy = "responders")
     private List<Vacancy> respondedVacancies = new ArrayList<>();

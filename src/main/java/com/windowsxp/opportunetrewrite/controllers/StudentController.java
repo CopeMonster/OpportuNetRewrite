@@ -6,6 +6,7 @@ import com.windowsxp.opportunetrewrite.entities.Student;
 import com.windowsxp.opportunetrewrite.entities.StudentDetail;
 import com.windowsxp.opportunetrewrite.entities.Vacancy;
 import com.windowsxp.opportunetrewrite.services.StudentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -44,9 +45,7 @@ public class StudentController {
 
     @GetMapping("/{studentId}/details")
     public ResponseEntity<StudentDetail> getStudentDetails(@PathVariable Long studentId) {
-        Student student = studentService.getStudentById(studentId);
-
-        StudentDetail studentDetail = student.getStudentDetail();
+        StudentDetail studentDetail = studentService.getStudentDetail(studentId);
 
         return ResponseEntity.ok(studentDetail);
     }
@@ -55,10 +54,11 @@ public class StudentController {
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity<StudentDetail> updateStudentDetails(
             @PathVariable Long studentId,
-            @RequestBody Map<String, Object> updates,
+            @Valid @RequestBody Map<String, Object> updates,
             @AuthenticationPrincipal UserDetails userDetails)
     {
-        StudentDetail studentDetail = studentService.updateStudentDetail(studentId, updates, userDetails.getUsername());
+        StudentDetail studentDetail =
+                studentService.updateStudentDetail(studentId, updates, userDetails.getUsername());
 
         return ResponseEntity.ok(studentDetail);
     }

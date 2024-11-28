@@ -1,10 +1,7 @@
 package com.windowsxp.opportunetrewrite.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
@@ -28,7 +25,8 @@ public class Company extends User {
     private String BIN;
 
     @OneToOne(mappedBy = "company", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private CompanyDetail companyDetail;
+    @Builder.Default
+    private CompanyDetail companyDetail = new CompanyDetail();
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vacancy> vacancies = new ArrayList<>();
