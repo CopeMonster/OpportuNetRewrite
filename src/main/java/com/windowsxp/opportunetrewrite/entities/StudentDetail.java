@@ -1,17 +1,16 @@
 package com.windowsxp.opportunetrewrite.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 
 @Entity
 @Table(name = "student_details")
@@ -24,14 +23,12 @@ public class StudentDetail {
     private Student student;
 
     @Column(name = "about_me")
-    private String aboutMe;
+    private String aboutMe = "";
 
     @ElementCollection(targetClass = String.class)
     @Column(name = "skills")
-    private List<String> skills;
+    private List<String> skills = new ArrayList<>();
 
     @Column(name = "profile_pic")
-    private String profilePic;
-
-
+    private String profilePic = "";
 }
