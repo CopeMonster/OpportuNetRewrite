@@ -92,6 +92,8 @@ public class AuthService {
         CompanyDetail companyDetail = new CompanyDetail();
         companyDetail.setCompany(company);
 
+        company.setCompanyDetail(companyDetail);
+
         companyService.saveCompany(company);
 
         return UserSignUpResponse.builder()
