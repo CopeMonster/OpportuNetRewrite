@@ -60,6 +60,7 @@ public class VacancyService {
                 .currency(Currency.valueOf(request.getCurrency()))
                 .build();
 
+        vacancyDetail.setVacancy(vacancy);
         vacancy.setVacancyDetail(vacancyDetail);
 
         return vacancyRepository.save(vacancy);

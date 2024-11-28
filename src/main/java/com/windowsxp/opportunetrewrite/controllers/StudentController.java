@@ -1,6 +1,8 @@
 package com.windowsxp.opportunetrewrite.controllers;
 
 import com.windowsxp.opportunetrewrite.assemblers.StudentAssembler;
+import com.windowsxp.opportunetrewrite.dto.StudentDTO;
+import com.windowsxp.opportunetrewrite.dto.StudentDetailDTO;
 import com.windowsxp.opportunetrewrite.entities.CV;
 import com.windowsxp.opportunetrewrite.entities.Student;
 import com.windowsxp.opportunetrewrite.entities.StudentDetail;
@@ -27,15 +29,32 @@ public class StudentController {
     private final StudentAssembler studentAssembler;
 
     @GetMapping("/{studentId}")
-    public EntityModel<Student> getStudentById(@PathVariable Long studentId) {
+    public EntityModel<StudentDTO> getStudentById(@PathVariable Long studentId) {
         Student student = studentService.getStudentById(studentId);
 
-        return studentAssembler.toModel(student);
+        StudentDTO studentDTO = StudentDTO.builder()
+                .id(student.getId())
+                .email(student.getEmail())
+                .createAt(student.getCreateAt())
+                .updateAt(student.getUpdateAt())
+                .build();
+
+        return studentAssembler.toModel(studentDTO);
     }
 
     @GetMapping
-    public CollectionModel<EntityModel<Student>> getAllStudents() {
-        List<EntityModel<Student>> students = studentService.getAllStudents()
+    public CollectionModel<EntityModel<StudentDTO>> getAllStudents() {
+        List<StudentDTO> studentDTOS = studentService.getAllStudents()
+                .stream()
+                .map(student -> StudentDTO.builder()
+                        .id(student.getId())
+                        .email(student.getEmail())
+                        .createAt(student.getCreateAt())
+                        .updateAt(student.getUpdateAt())
+                        .build())
+                .toList();
+
+        List<EntityModel<StudentDTO>> students = studentDTOS
                 .stream()
                 .map(studentAssembler::toModel)
                 .toList();
@@ -44,15 +63,19 @@ public class StudentController {
     }
 
     @GetMapping("/{studentId}/details")
-    public ResponseEntity<StudentDetail> getStudentDetails(@PathVariable Long studentId) {
+    public ResponseEntity<StudentDetailDTO> getStudentDetails(@PathVariable Long studentId) {
         StudentDetail studentDetail = studentService.getStudentDetail(studentId);
 
-        return ResponseEntity.ok(studentDetail);
+        return ResponseEntity.ok(StudentDetailDTO.builder()
+                .aboutMe(studentDetail.getAboutMe())
+                .skills(studentDetail.getSkills())
+                .profilePic(studentDetail.getProfilePic())
+                .build());
     }
 
     @PatchMapping("/{studentId}/details")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public ResponseEntity<StudentDetail> updateStudentDetails(
+    public ResponseEntity<StudentDetailDTO> updateStudentDetails(
             @PathVariable Long studentId,
             @Valid @RequestBody Map<String, Object> updates,
             @AuthenticationPrincipal UserDetails userDetails)
@@ -60,7 +83,11 @@ public class StudentController {
         StudentDetail studentDetail =
                 studentService.updateStudentDetail(studentId, updates, userDetails.getUsername());
 
-        return ResponseEntity.ok(studentDetail);
+        return ResponseEntity.ok(StudentDetailDTO.builder()
+                .aboutMe(studentDetail.getAboutMe())
+                .skills(studentDetail.getSkills())
+                .profilePic(studentDetail.getProfilePic())
+                .build());
     }
 
     @GetMapping("/{studentId}/cv")
