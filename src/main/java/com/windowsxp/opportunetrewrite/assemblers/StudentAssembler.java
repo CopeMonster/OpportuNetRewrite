@@ -1,5 +1,6 @@
 package com.windowsxp.opportunetrewrite.assemblers;
 
+import com.windowsxp.opportunetrewrite.controllers.StudentController;
 import com.windowsxp.opportunetrewrite.entities.Student;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
@@ -14,6 +15,7 @@ public class StudentAssembler implements RepresentationModelAssembler<Student, E
     @Override
     public EntityModel<Student> toModel(Student student) {
         return EntityModel.of(student,
-                linkTo(methodOn(StudentAssembler.class)));
+                linkTo(methodOn(StudentController.class).getStudentById(student.getId())).withSelfRel(),
+                linkTo(methodOn(StudentController.class).getAllStudents()).withRel("users"));
     }
 }

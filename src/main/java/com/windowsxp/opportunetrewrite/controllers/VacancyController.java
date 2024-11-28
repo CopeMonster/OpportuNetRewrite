@@ -114,7 +114,7 @@ public class VacancyController {
         );
     }
 
-    @PostMapping("/{vacancyId}respond")
+    @PostMapping("/{vacancyId}cancelRespond")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity<VacancyRespondResponseDTO> cancelRespond(
             @PathVariable Long vacancyId,
