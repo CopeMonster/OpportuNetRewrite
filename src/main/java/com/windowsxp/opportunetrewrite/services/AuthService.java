@@ -2,7 +2,9 @@ package com.windowsxp.opportunetrewrite.services;
 
 import com.windowsxp.opportunetrewrite.dto.*;
 import com.windowsxp.opportunetrewrite.entities.Company;
+import com.windowsxp.opportunetrewrite.entities.CompanyDetail;
 import com.windowsxp.opportunetrewrite.entities.Student;
+import com.windowsxp.opportunetrewrite.entities.StudentDetail;
 import com.windowsxp.opportunetrewrite.exceptions.custom.UserExistException;
 import com.windowsxp.opportunetrewrite.exceptions.custom.UserNotFoundException;
 import com.windowsxp.opportunetrewrite.repositories.StudentRepository;
@@ -58,6 +60,11 @@ public class AuthService {
                 .dateOfBirth(dto.getDateOfBirth())
                 .build();
 
+        StudentDetail studentDetail = new StudentDetail();
+        studentDetail.setStudent(student);
+
+        student.setStudentDetail(studentDetail);
+
         studentService.saveStudent(student);
 
         return UserSignUpResponse.builder()
@@ -81,6 +88,9 @@ public class AuthService {
                 ))
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .build();
+
+        CompanyDetail companyDetail = new CompanyDetail();
+        companyDetail.setCompany(company);
 
         companyService.saveCompany(company);
 

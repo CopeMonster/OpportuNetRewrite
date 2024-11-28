@@ -32,7 +32,7 @@ public class Vacancy {
     )
     private List<Student> responders = new ArrayList<>();
 
-    @OneToOne(mappedBy = "vacancy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "vacancy", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Builder.Default
     private VacancyDetail vacancyDetail = new VacancyDetail();
 
@@ -61,5 +61,12 @@ public class Vacancy {
     @PreUpdate
     protected void onUpdate() {
         this.updateAt = LocalDateTime.now();
+    }
+
+    public void setVacancyDetail(VacancyDetail vacancyDetail) {
+        this.vacancyDetail = vacancyDetail;
+        if (vacancyDetail != null) {
+            vacancyDetail.setVacancy(this);
+        }
     }
 }

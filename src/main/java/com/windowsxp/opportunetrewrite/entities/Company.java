@@ -24,7 +24,7 @@ public class Company extends User {
     @Column(name = "BIN", nullable = false, unique = true)
     private String BIN;
 
-    @OneToOne(mappedBy = "company", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "company", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Builder.Default
     private CompanyDetail companyDetail = new CompanyDetail();
 

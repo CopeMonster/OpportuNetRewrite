@@ -29,14 +29,14 @@ public class Student extends User {
     @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
 
-    @OneToOne(mappedBy = "student", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "student", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Builder.Default
     private StudentDetail studentDetail = new StudentDetail();
 
     @ManyToMany(mappedBy = "responders")
     private List<Vacancy> respondedVacancies = new ArrayList<>();
 
-    @OneToOne(mappedBy = "student", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "student", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private CV cv;
 
     public void applyVacancy(Vacancy vacancy) {
@@ -47,5 +47,12 @@ public class Student extends User {
     public void cancelVacancy(Vacancy vacancy) {
         respondedVacancies.remove(vacancy);
         vacancy.getResponders().remove(this);
+    }
+
+    public void setStudentDetail(StudentDetail studentDetail) {
+        this.studentDetail = studentDetail;
+        if (studentDetail != null) {
+            studentDetail.setStudent(this);
+        }
     }
 }

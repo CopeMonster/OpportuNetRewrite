@@ -32,4 +32,6 @@ public class StudentDetail {
 
     @Column(name = "profile_pic")
     private String profilePic;
+
+
 }

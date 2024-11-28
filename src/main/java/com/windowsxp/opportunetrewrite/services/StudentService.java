@@ -33,22 +33,14 @@ public class StudentService {
                 .orElseThrow(() -> new UserNotFoundException("User with email " + email + " is not found"));
     }
 
+    public List<Student> getAllStudents() {
+        return studentRepository.findAll();
+    }
+
     public List<Vacancy> getRespondedVacancies(Long id, String email) {
         Student student = validateStudentAccess(id, email);
 
         return student.getRespondedVacancies();
-    }
-
-    public boolean isStudentExistById(Long id) {
-        return studentRepository.existsById(id);
-    }
-
-    public boolean isStudentExistByEmail(String email) {
-        return studentRepository.existsByEmail(email);
-    }
-
-    public List<Student> getAllStudents() {
-        return studentRepository.findAll();
     }
 
     public Student saveStudent(Student student) {
@@ -114,5 +106,13 @@ public class StudentService {
         }
 
         return student;
+    }
+
+    public boolean isStudentExistById(Long id) {
+        return studentRepository.existsById(id);
+    }
+
+    public boolean isStudentExistByEmail(String email) {
+        return studentRepository.existsByEmail(email);
     }
 }

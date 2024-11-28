@@ -1,9 +1,6 @@
 package com.windowsxp.opportunetrewrite.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,6 +31,6 @@ public class StudentSignUpRequestDTO {
     @Pattern(regexp = "^[0-9]{10,15}$", message = "Invalid phone number")
     private String phoneNumber;
 
-    @NotBlank(message = "Date of birth is required")
+    @NotNull(message = "Date of birth is required")
     private LocalDate dateOfBirth;
 }
