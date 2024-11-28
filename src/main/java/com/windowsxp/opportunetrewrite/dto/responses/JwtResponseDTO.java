@@ -1,4 +1,4 @@
-package com.windowsxp.opportunetrewrite.dto;
+package com.windowsxp.opportunetrewrite.dto.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserSignUpResponse {
-    private Long id;
-
-    private String email;
+public class JwtResponseDTO {
+    private String accessToken;
 }

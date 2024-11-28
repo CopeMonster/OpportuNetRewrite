@@ -1,8 +1,7 @@
 package com.windowsxp.opportunetrewrite.assemblers;
 
 import com.windowsxp.opportunetrewrite.controllers.StudentController;
-import com.windowsxp.opportunetrewrite.dto.StudentDTO;
-import com.windowsxp.opportunetrewrite.entities.Student;
+import com.windowsxp.opportunetrewrite.dto.responses.StudentDTO;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;

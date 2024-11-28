@@ -1,8 +1,8 @@
 package com.windowsxp.opportunetrewrite.controllers;
 
 import com.windowsxp.opportunetrewrite.assemblers.StudentAssembler;
-import com.windowsxp.opportunetrewrite.dto.StudentDTO;
-import com.windowsxp.opportunetrewrite.dto.StudentDetailDTO;
+import com.windowsxp.opportunetrewrite.dto.responses.StudentDTO;
+import com.windowsxp.opportunetrewrite.dto.responses.StudentDetailDTO;
 import com.windowsxp.opportunetrewrite.entities.CV;
 import com.windowsxp.opportunetrewrite.entities.Student;
 import com.windowsxp.opportunetrewrite.entities.StudentDetail;
@@ -31,13 +31,7 @@ public class StudentController {
     @GetMapping("/{studentId}")
     public EntityModel<StudentDTO> getStudentById(@PathVariable Long studentId) {
         Student student = studentService.getStudentById(studentId);
-
-        StudentDTO studentDTO = StudentDTO.builder()
-                .id(student.getId())
-                .email(student.getEmail())
-                .createAt(student.getCreateAt())
-                .updateAt(student.getUpdateAt())
-                .build();
+        StudentDTO studentDTO = StudentDTO.from(student);
 
         return studentAssembler.toModel(studentDTO);
     }
@@ -46,12 +40,7 @@ public class StudentController {
     public CollectionModel<EntityModel<StudentDTO>> getAllStudents() {
         List<StudentDTO> studentDTOS = studentService.getAllStudents()
                 .stream()
-                .map(student -> StudentDTO.builder()
-                        .id(student.getId())
-                        .email(student.getEmail())
-                        .createAt(student.getCreateAt())
-                        .updateAt(student.getUpdateAt())
-                        .build())
+                .map(StudentDTO::from)
                 .toList();
 
         List<EntityModel<StudentDTO>> students = studentDTOS
@@ -66,11 +55,7 @@ public class StudentController {
     public ResponseEntity<StudentDetailDTO> getStudentDetails(@PathVariable Long studentId) {
         StudentDetail studentDetail = studentService.getStudentDetail(studentId);
 
-        return ResponseEntity.ok(StudentDetailDTO.builder()
-                .aboutMe(studentDetail.getAboutMe())
-                .skills(studentDetail.getSkills())
-                .profilePic(studentDetail.getProfilePic())
-                .build());
+        return ResponseEntity.ok(StudentDetailDTO.from(studentDetail));
     }
 
     @PatchMapping("/{studentId}/details")
@@ -83,11 +68,7 @@ public class StudentController {
         StudentDetail studentDetail =
                 studentService.updateStudentDetail(studentId, updates, userDetails.getUsername());
 
-        return ResponseEntity.ok(StudentDetailDTO.builder()
-                .aboutMe(studentDetail.getAboutMe())
-                .skills(studentDetail.getSkills())
-                .profilePic(studentDetail.getProfilePic())
-                .build());
+        return ResponseEntity.ok(StudentDetailDTO.from(studentDetail));
     }
 
     @GetMapping("/{studentId}/cv")

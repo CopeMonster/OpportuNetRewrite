@@ -1,13 +1,16 @@
 package com.windowsxp.opportunetrewrite.services;
 
-import com.windowsxp.opportunetrewrite.dto.*;
+import com.windowsxp.opportunetrewrite.dto.requests.CompanySignUpRequestDTO;
+import com.windowsxp.opportunetrewrite.dto.requests.LogInRequestDTO;
+import com.windowsxp.opportunetrewrite.dto.requests.StudentSignUpRequestDTO;
+import com.windowsxp.opportunetrewrite.dto.responses.JwtResponseDTO;
+import com.windowsxp.opportunetrewrite.dto.responses.UserSignUpResponse;
 import com.windowsxp.opportunetrewrite.entities.Company;
 import com.windowsxp.opportunetrewrite.entities.CompanyDetail;
 import com.windowsxp.opportunetrewrite.entities.Student;
 import com.windowsxp.opportunetrewrite.entities.StudentDetail;
 import com.windowsxp.opportunetrewrite.exceptions.custom.UserExistException;
 import com.windowsxp.opportunetrewrite.exceptions.custom.UserNotFoundException;
-import com.windowsxp.opportunetrewrite.repositories.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

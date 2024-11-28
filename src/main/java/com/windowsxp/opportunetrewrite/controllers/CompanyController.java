@@ -1,8 +1,8 @@
 package com.windowsxp.opportunetrewrite.controllers;
 
 import com.windowsxp.opportunetrewrite.assemblers.CompanyModelAssembler;
-import com.windowsxp.opportunetrewrite.dto.CompanyDTO;
-import com.windowsxp.opportunetrewrite.dto.CompanyDetailDTO;
+import com.windowsxp.opportunetrewrite.dto.responses.CompanyDTO;
+import com.windowsxp.opportunetrewrite.dto.responses.CompanyDetailDTO;
 import com.windowsxp.opportunetrewrite.entities.Company;
 import com.windowsxp.opportunetrewrite.entities.CompanyDetail;
 import com.windowsxp.opportunetrewrite.entities.Vacancy;
@@ -34,13 +34,7 @@ public class CompanyController {
     public EntityModel<CompanyDTO> getCompanyById(@PathVariable Long companyId) {
         Company company = companyService.getCompanyById(companyId);
 
-        CompanyDTO companyDTO = CompanyDTO.builder()
-                .id(company.getId())
-                .email(company.getEmail())
-                .BIN(company.getBIN())
-                .createAt(company.getCreateAt())
-                .updateAt(company.getUpdateAt())
-                .build();
+        CompanyDTO companyDTO = CompanyDTO.from(company);
 
         return companyModelAssembler.toModel(companyDTO);
     }
@@ -49,13 +43,7 @@ public class CompanyController {
     public CollectionModel<EntityModel<CompanyDTO>> getCompanies() {
         List<CompanyDTO> companyDTOS = companyService.getAllCompanies()
                 .stream()
-                .map(company -> CompanyDTO.builder()
-                        .id(company.getId())
-                        .email(company.getEmail())
-                        .BIN(company.getBIN())
-                        .createAt(company.getCreateAt())
-                        .updateAt(company.getUpdateAt())
-                        .build())
+                .map(CompanyDTO::from)
                 .toList();
 
         List<EntityModel<CompanyDTO>> companies = companyDTOS
@@ -82,10 +70,7 @@ public class CompanyController {
     public ResponseEntity<CompanyDetailDTO> getCompanyDetails(@PathVariable Long companyId) {
         CompanyDetail companyDetail = companyService.getCompanyDetail(companyId);
 
-        return ResponseEntity.ok(CompanyDetailDTO.builder()
-                .description(companyDetail.getDescription())
-                .contactEmail(companyDetail.getContactEmail())
-                .build());
+        return ResponseEntity.ok(CompanyDetailDTO.from(companyDetail));
     }
 
     @PatchMapping("/{companyId}/details")
@@ -97,10 +82,7 @@ public class CompanyController {
         CompanyDetail companyDetail =
                 companyService.updateCompanyDetail(companyId, updates, userDetails.getUsername());
 
-        return ResponseEntity.ok(CompanyDetailDTO.builder()
-                .description(companyDetail.getDescription())
-                .contactEmail(companyDetail.getContactEmail())
-                .build());
+        return ResponseEntity.ok(CompanyDetailDTO.from(companyDetail));
     }
 
     @GetMapping("/{companyId}/vacancies")

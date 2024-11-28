@@ -1,8 +1,11 @@
 package com.windowsxp.opportunetrewrite.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.redis.core.RedisHash;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,16 +18,16 @@ import java.util.List;
 
 @Entity
 @Table(name = "vacancies")
-public class Vacancy {
+public class Vacancy implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "company_id")
     private Company company;
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     @JoinTable(
             name = "vacancies_students",
             joinColumns = @JoinColumn(name = "vacancy_id"),
@@ -56,6 +59,7 @@ public class Vacancy {
     protected void onCreate() {
         this.createAt = LocalDateTime.now();
         this.updateAt = LocalDateTime.now();
+        this.responders = new ArrayList<>();
     }
 
     @PreUpdate

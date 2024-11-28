@@ -1,9 +1,11 @@
 package com.windowsxp.opportunetrewrite.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -17,7 +19,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "companies")
-public class Company extends User {
+public class Company extends User implements Serializable {
     @Column(name = "company_name", nullable = false)
     private String companyName;
 

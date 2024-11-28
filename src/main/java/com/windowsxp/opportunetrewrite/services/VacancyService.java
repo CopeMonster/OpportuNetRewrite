@@ -1,6 +1,6 @@
 package com.windowsxp.opportunetrewrite.services;
 
-import com.windowsxp.opportunetrewrite.dto.VacancyCreateRequest;
+import com.windowsxp.opportunetrewrite.dto.requests.VacancyCreateRequest;
 import com.windowsxp.opportunetrewrite.entities.Company;
 import com.windowsxp.opportunetrewrite.entities.Student;
 import com.windowsxp.opportunetrewrite.entities.Vacancy;
@@ -13,8 +13,8 @@ import com.windowsxp.opportunetrewrite.exceptions.custom.StudentNotRespondVacanc
 import com.windowsxp.opportunetrewrite.exceptions.custom.VacancyNotFoundException;
 import com.windowsxp.opportunetrewrite.repositories.VacancyDetailsRepository;
 import com.windowsxp.opportunetrewrite.repositories.VacancyRepository;
-import jakarta.persistence.Table;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.util.Pair;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -31,6 +31,7 @@ public class VacancyService {
     private final VacancyDetailsRepository vacancyDetailsRepository;
     private final StudentService studentService;
 
+    @Cacheable(cacheNames = "vacanciesCache", key = "#id")
     public Vacancy getVacancyById(Long id) {
         return vacancyRepository.findById(id)
                 .orElseThrow(() -> new VacancyNotFoundException("Vacancy with id " + id + " is not found"));
@@ -53,11 +54,11 @@ public class VacancyService {
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .requirements(request.getRequirements())
-                .employmentType(EmploymentType.valueOf(request.getEmploymentType()))
-                .workScheduleType(WorkScheduleType.valueOf(request.getWorkScheduleType()))
-                .experienceType(ExperienceType.valueOf(request.getExperienceType()))
+                .employmentType(request.getEmploymentType())
+                .workScheduleType(request.getWorkScheduleType())
+                .experienceType(request.getExperienceType())
                 .salary(request.getSalary())
-                .currency(Currency.valueOf(request.getCurrency()))
+                .currency(request.getCurrency())
                 .build();
 
         vacancyDetail.setVacancy(vacancy);

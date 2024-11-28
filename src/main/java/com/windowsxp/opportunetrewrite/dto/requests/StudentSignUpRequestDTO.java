@@ -1,4 +1,4 @@
-package com.windowsxp.opportunetrewrite.dto;
+package com.windowsxp.opportunetrewrite.dto.requests;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;

@@ -1,9 +1,10 @@
 package com.windowsxp.opportunetrewrite.controllers;
 
 import com.windowsxp.opportunetrewrite.assemblers.VacancyAssembler;
-import com.windowsxp.opportunetrewrite.dto.VacancyCreateRequest;
-import com.windowsxp.opportunetrewrite.dto.VacancyRespondResponseDTO;
-import com.windowsxp.opportunetrewrite.entities.Company;
+import com.windowsxp.opportunetrewrite.dto.responses.StudentDTO;
+import com.windowsxp.opportunetrewrite.dto.requests.VacancyCreateRequest;
+import com.windowsxp.opportunetrewrite.dto.responses.VacancyDTO;
+import com.windowsxp.opportunetrewrite.dto.responses.VacancyRespondResponseDTO;
 import com.windowsxp.opportunetrewrite.entities.Student;
 import com.windowsxp.opportunetrewrite.entities.Vacancy;
 import com.windowsxp.opportunetrewrite.entities.VacancyDetail;
@@ -33,15 +34,20 @@ public class VacancyController {
     private final VacancyAssembler vacancyAssembler;
 
     @GetMapping("/{vacancyId}")
-    public EntityModel<Vacancy> getVacancyById(@PathVariable Long vacancyId) {
+    public EntityModel<VacancyDTO> getVacancyById(@PathVariable Long vacancyId) {
         Vacancy vacancy = vacancyService.getVacancyById(vacancyId);
 
-        return vacancyAssembler.toModel(vacancy);
+        return vacancyAssembler.toModel(VacancyDTO.from(vacancy));
     }
 
     @GetMapping
-    public CollectionModel<EntityModel<Vacancy>> getAllVacancies() {
-        List<EntityModel<Vacancy>> vacancies = vacancyService.getVacancies()
+    public CollectionModel<EntityModel<VacancyDTO>> getAllVacancies() {
+        List<VacancyDTO> vacancyDTOS = vacancyService.getVacancies()
+                .stream()
+                .map(VacancyDTO::from)
+                .toList();
+
+        List<EntityModel<VacancyDTO>> vacancies = vacancyDTOS
                 .stream()
                 .map(vacancyAssembler::toModel)
                 .toList();
@@ -51,17 +57,19 @@ public class VacancyController {
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_COMPANY')")
-    public ResponseEntity<Vacancy> createVacancy(
+    public ResponseEntity<VacancyDTO> createVacancy(
             @Valid @RequestBody VacancyCreateRequest request,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        Vacancy createdVacancy = vacancyService.createVacancy(request, userDetails.getUsername());
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdVacancy);
+        Vacancy vacancy = vacancyService.createVacancy(request, userDetails.getUsername());
+        VacancyDTO vacancyDTO = VacancyDTO.from(vacancy);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(vacancyDTO);
     }
 
     @PatchMapping("/{vacancyId}")
     @PreAuthorize("hasRole('ROLE_COMPANY')")
-    public ResponseEntity<Vacancy> updateVacancy(
+    public ResponseEntity<VacancyDTO> updateVacancy(
             @PathVariable Long vacancyId,
             @Valid @RequestBody Map<String, Object> updates,
             @AuthenticationPrincipal UserDetails userDetails
@@ -69,7 +77,7 @@ public class VacancyController {
         VacancyDetail vacancyDetail =
                 vacancyService.updateVacancyDetails(vacancyId, updates, userDetails.getUsername());
 
-        return ResponseEntity.ok(vacancyDetail.getVacancy());
+        return ResponseEntity.ok(VacancyDTO.from(vacancyDetail.getVacancy()));
     }
 
     @DeleteMapping("/{vacancyId}")
@@ -85,13 +93,17 @@ public class VacancyController {
 
     @GetMapping("/{vacancyId}/responders")
     @PreAuthorize("hasRole('ROLE_COMPANY')")
-    public ResponseEntity<List<Student>> getResponders(
+    public ResponseEntity<List<StudentDTO>> getResponders(
             @PathVariable Long vacancyId,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         List<Student> responders = vacancyService.getResponders(vacancyId, userDetails.getUsername());
+        List<StudentDTO> studentDTOS = responders
+                .stream()
+                .map(StudentDTO::from)
+                .toList();
 
-        return ResponseEntity.ok(responders);
+        return ResponseEntity.ok(studentDTOS);
     }
 
     @PostMapping("/{vacancyId}respond")

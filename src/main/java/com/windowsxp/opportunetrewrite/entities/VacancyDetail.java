@@ -7,6 +7,8 @@ import com.windowsxp.opportunetrewrite.entities.enums.WorkScheduleType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,7 +17,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "vacancy_details")
-public class VacancyDetail {
+public class VacancyDetail implements Serializable {
     @Id
     private Long id;
 

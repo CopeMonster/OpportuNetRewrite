@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "students")
-public class Student extends User {
+public class Student extends User implements Serializable {
     @Column(name = "firstname", nullable = false)
     private String firstname;
 
@@ -33,7 +34,7 @@ public class Student extends User {
     @Builder.Default
     private StudentDetail studentDetail = new StudentDetail();
 
-    @ManyToMany(mappedBy = "responders")
+    @ManyToMany(mappedBy = "responders", fetch = FetchType.EAGER)
     private List<Vacancy> respondedVacancies = new ArrayList<>();
 
     @OneToOne(mappedBy = "student", fetch = FetchType.EAGER, cascade = CascadeType.ALL)

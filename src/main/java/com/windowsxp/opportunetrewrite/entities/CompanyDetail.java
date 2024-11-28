@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,7 +15,7 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "company_details")
-public class CompanyDetail {
+public class CompanyDetail implements Serializable {
     @Id
     private Long id;
 

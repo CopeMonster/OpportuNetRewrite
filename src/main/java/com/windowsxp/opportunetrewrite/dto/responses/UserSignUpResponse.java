@@ -1,20 +1,16 @@
-package com.windowsxp.opportunetrewrite.dto;
+package com.windowsxp.opportunetrewrite.dto.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CompanyDTO {
+public class UserSignUpResponse {
     private Long id;
+
     private String email;
-    private String BIN;
-    private LocalDateTime createAt;
-    private LocalDateTime updateAt;
 }

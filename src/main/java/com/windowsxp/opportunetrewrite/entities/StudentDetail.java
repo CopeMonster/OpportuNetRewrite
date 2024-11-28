@@ -3,6 +3,7 @@ package com.windowsxp.opportunetrewrite.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "student_details")
-public class StudentDetail {
+public class StudentDetail implements Serializable {
     @Id
     private Long id;
 

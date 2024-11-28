@@ -1,6 +1,10 @@
 package com.windowsxp.opportunetrewrite.controllers;
 
-import com.windowsxp.opportunetrewrite.dto.*;
+import com.windowsxp.opportunetrewrite.dto.requests.CompanySignUpRequestDTO;
+import com.windowsxp.opportunetrewrite.dto.requests.LogInRequestDTO;
+import com.windowsxp.opportunetrewrite.dto.requests.StudentSignUpRequestDTO;
+import com.windowsxp.opportunetrewrite.dto.responses.JwtResponseDTO;
+import com.windowsxp.opportunetrewrite.dto.responses.UserSignUpResponse;
 import com.windowsxp.opportunetrewrite.services.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

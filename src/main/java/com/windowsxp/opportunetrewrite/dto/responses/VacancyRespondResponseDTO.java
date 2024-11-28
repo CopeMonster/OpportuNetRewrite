@@ -1,4 +1,4 @@
-package com.windowsxp.opportunetrewrite.dto;
+package com.windowsxp.opportunetrewrite.dto.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
