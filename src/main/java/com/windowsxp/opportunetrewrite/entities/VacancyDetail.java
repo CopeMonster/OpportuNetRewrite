@@ -24,30 +24,30 @@ public class VacancyDetail {
     private Vacancy vacancy;
 
     @Column(name = "title", nullable = false)
-    private String title;
+    private String title = "";
 
     @Column(name = "description", nullable = false)
-    private String description;
+    private String description = "";
 
     @Column(name = "requirements")
-    private String requirements;
+    private String requirements = "";
 
     @Enumerated(EnumType.STRING)
     @Column(name = "employment_type", nullable = false)
-    private EmploymentType employmentType;
+    private EmploymentType employmentType = EmploymentType.FULL_TIME;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "work_schedule_type", nullable = false)
-    private WorkScheduleType workScheduleType;
+    private WorkScheduleType workScheduleType = WorkScheduleType.FULL_DAY;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "experience_type", nullable = false)
-    private ExperienceType experienceType;
+    private ExperienceType experienceType = ExperienceType.NO_EXPERIENCE;
 
     @Column(name = "salary")
-    private Float salary;
+    private Float salary = Float.valueOf(0);
 
     @Enumerated(EnumType.STRING)
     @Column(name = "currency")
-    private Currency currency;
+    private Currency currency = Currency.KZT;
 }

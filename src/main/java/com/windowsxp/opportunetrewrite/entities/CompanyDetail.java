@@ -22,8 +22,8 @@ public class CompanyDetail {
     private Company company;
 
     @Column(name = "description")
-    private String description;
+    private String description = "";
 
     @Column(name = "contact_email", nullable = false)
-    private String contactEmail;
+    private String contactEmail = "";
 }
