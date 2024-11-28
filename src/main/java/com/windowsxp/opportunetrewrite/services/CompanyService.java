@@ -2,6 +2,7 @@ package com.windowsxp.opportunetrewrite.services;
 
 import com.windowsxp.opportunetrewrite.entities.Company;
 import com.windowsxp.opportunetrewrite.entities.CompanyDetail;
+import com.windowsxp.opportunetrewrite.entities.Student;
 import com.windowsxp.opportunetrewrite.entities.Vacancy;
 import com.windowsxp.opportunetrewrite.exceptions.custom.CompanyNotFoundException;
 import com.windowsxp.opportunetrewrite.exceptions.custom.UserNotFoundException;
@@ -55,12 +56,7 @@ public class CompanyService {
     }
 
     public CompanyDetail updateCompanyDetail(Long id, Map<String, Object> updates, String email) {
-        Company company = companyRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
-
-        if (!company.getEmail().equals(email)) {
-            throw new AccessDeniedException("You do not have permission to do this.");
-        }
+        Company company = validateCompanyAccess(id, email);
 
         CompanyDetail companyDetail = company.getCompanyDetail();
 
@@ -82,12 +78,7 @@ public class CompanyService {
     }
 
     public void deleteCompany(Long id, String email) {
-        Company company = companyRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
-
-        if (!company.getEmail().equals(email)) {
-            throw new AccessDeniedException("You do not have permission to do this.");
-        }
+        validateCompanyAccess(id, email);
 
         companyRepository.deleteById(id);
     }
@@ -97,5 +88,16 @@ public class CompanyService {
                 .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
 
         return company.getVacancies();
+    }
+
+    public Company validateCompanyAccess(Long id, String email) {
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
+
+        if (!company.getEmail().equals(email)) {
+            throw new AccessDeniedException("You do not have permission to do this.");
+        }
+
+        return company;
     }
 }

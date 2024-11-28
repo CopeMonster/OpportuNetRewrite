@@ -5,6 +5,7 @@ import com.windowsxp.opportunetrewrite.entities.Student;
 import com.windowsxp.opportunetrewrite.entities.StudentDetail;
 import com.windowsxp.opportunetrewrite.entities.Vacancy;
 import com.windowsxp.opportunetrewrite.exceptions.custom.UserNotFoundException;
+import com.windowsxp.opportunetrewrite.exceptions.custom.VacancyNotFoundException;
 import com.windowsxp.opportunetrewrite.repositories.StudentDetailsRepository;
 import com.windowsxp.opportunetrewrite.repositories.StudentRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,11 +34,7 @@ public class StudentService {
     }
 
     public List<Vacancy> getRespondedVacancies(Long id, String email) {
-        Student student = getStudentById(id);
-
-        if (!student.getEmail().equals(email)) {
-            throw new AccessDeniedException("You do not have permission to do this.");
-        }
+        Student student = validateStudentAccess(id, email);
 
         return student.getRespondedVacancies();
     }
@@ -60,12 +57,7 @@ public class StudentService {
 
     @Transactional
     public void deleteStudent(Long id, String email) {
-        Student student = studentRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
-
-        if (!student.getEmail().equals(email)) {
-            throw new AccessDeniedException("You do not have permission to do this.");
-        }
+        validateStudentAccess(id, email);
 
         studentRepository.deleteById(id);
     }
@@ -79,12 +71,7 @@ public class StudentService {
 
     @Transactional
     public StudentDetail updateStudentDetail(Long id, Map<String, Object> updates, String email) {
-        Student student = studentRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
-
-        if (!student.getEmail().equals(email)) {
-            throw new AccessDeniedException("You do not have permission to do this.");
-        }
+        Student student = validateStudentAccess(id, email);
 
         StudentDetail studentDetail = student.getStudentDetail();
 
@@ -113,6 +100,12 @@ public class StudentService {
     }
 
     public CV getCv(Long id, String email) {
+        Student student = validateStudentAccess(id, email);
+
+        return student.getCv();
+    }
+
+    public Student validateStudentAccess(Long id, String email) {
         Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with id " + id + " is not found"));
 
@@ -120,8 +113,6 @@ public class StudentService {
             throw new AccessDeniedException("You do not have permission to do this.");
         }
 
-        return student.getCv();
+        return student;
     }
-
-
 }

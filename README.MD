@@ -36,8 +36,8 @@ Opportu.Net - это сервис, который предостовляет в�
 * ✅ POST: /vacancies - создать вакансию
 * ✅ PATCH: /vacancies/{vacancyId} - редактировать вакансию
 * ✅ DELETE: /vacancies/{vacancyId} - удаление вакансии
-* GET: /vacancies/{vacancyId}/responders - список откликнувшихся студентов
-* POST: /vacancies/{vacancyId}/respond - откликнуться на вакансию
-* POST: /vacancies/{vacancyId}/cancelRespond - отменить отклик на вакансию
+* ✅ GET: /vacancies/{vacancyId}/responders - список откликнувшихся студентов
+* ✅ POST: /vacancies/{vacancyId}/respond - откликнуться на вакансию
+* ✅ POST: /vacancies/{vacancyId}/cancelRespond - отменить отклик на вакансию
 
 

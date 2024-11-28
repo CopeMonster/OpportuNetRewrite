@@ -2,6 +2,7 @@ package com.windowsxp.opportunetrewrite.controllers;
 
 import com.windowsxp.opportunetrewrite.assemblers.VacancyAssembler;
 import com.windowsxp.opportunetrewrite.dto.VacancyCreateRequest;
+import com.windowsxp.opportunetrewrite.dto.VacancyRespondResponseDTO;
 import com.windowsxp.opportunetrewrite.entities.Company;
 import com.windowsxp.opportunetrewrite.entities.Student;
 import com.windowsxp.opportunetrewrite.entities.Vacancy;
@@ -10,6 +11,7 @@ import com.windowsxp.opportunetrewrite.services.CompanyService;
 import com.windowsxp.opportunetrewrite.services.VacancyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.util.Pair;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
@@ -76,12 +78,59 @@ public class VacancyController {
             @PathVariable Long vacancyId,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        Company company = companyService.getCompanyByEmail(userDetails.getUsername());
-
-        vacancyService.deleteVacancy(vacancyId, company);
+        vacancyService.deleteVacancy(vacancyId, userDetails.getUsername());
 
         return ResponseEntity.ok("Company with id " + vacancyId + " was deleted");
     }
 
+    @GetMapping("/{vacancyId}/responders")
+    @PreAuthorize("hasRole('ROLE_COMPANY')")
+    public ResponseEntity<List<Student>> getResponders(
+            @PathVariable Long vacancyId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        List<Student> responders = vacancyService.getResponders(vacancyId, userDetails.getUsername());
 
+        return ResponseEntity.ok(responders);
+    }
+
+    @PostMapping("/{vacancyId}respond")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public ResponseEntity<VacancyRespondResponseDTO> applyRespond(
+            @PathVariable Long vacancyId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Pair<Vacancy, Student> vacancyStudent =
+                vacancyService.applyStudentRespond(vacancyId, userDetails.getUsername());
+
+        return ResponseEntity.ok(
+                VacancyRespondResponseDTO.builder()
+                        .studentEmail(vacancyStudent.getSecond().getEmail())
+                        .vacancyTitle(vacancyStudent.getFirst().getVacancyDetail().getTitle())
+                        .vacancyCompany(vacancyStudent.getFirst().getCompany().getCompanyName())
+                        .vacancyDescription(vacancyStudent.getFirst().getVacancyDetail().getDescription())
+                        .message("Student applied to vacancy")
+                        .build()
+        );
+    }
+
+    @PostMapping("/{vacancyId}respond")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public ResponseEntity<VacancyRespondResponseDTO> cancelRespond(
+            @PathVariable Long vacancyId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Pair<Vacancy, Student> vacancyStudent =
+                vacancyService.cancelStudentRespond(vacancyId, userDetails.getUsername());
+
+        return ResponseEntity.ok(
+                VacancyRespondResponseDTO.builder()
+                        .studentEmail(vacancyStudent.getSecond().getEmail())
+                        .vacancyTitle(vacancyStudent.getFirst().getVacancyDetail().getTitle())
+                        .vacancyCompany(vacancyStudent.getFirst().getCompany().getCompanyName())
+                        .vacancyDescription(vacancyStudent.getFirst().getVacancyDetail().getDescription())
+                        .message("Student cancel vacancy reply")
+                        .build()
+        );
+    }
 }
