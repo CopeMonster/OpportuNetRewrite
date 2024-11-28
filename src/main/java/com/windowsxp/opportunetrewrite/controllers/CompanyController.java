@@ -1,6 +1,8 @@
 package com.windowsxp.opportunetrewrite.controllers;
 
 import com.windowsxp.opportunetrewrite.assemblers.CompanyModelAssembler;
+import com.windowsxp.opportunetrewrite.dto.CompanyDTO;
+import com.windowsxp.opportunetrewrite.dto.CompanyDetailDTO;
 import com.windowsxp.opportunetrewrite.entities.Company;
 import com.windowsxp.opportunetrewrite.entities.CompanyDetail;
 import com.windowsxp.opportunetrewrite.entities.Vacancy;
@@ -29,15 +31,34 @@ public class CompanyController {
     private final CompanyModelAssembler companyModelAssembler;
 
     @GetMapping("/{companyId}")
-    public EntityModel<Company> getCompanyById(@PathVariable Long companyId) {
+    public EntityModel<CompanyDTO> getCompanyById(@PathVariable Long companyId) {
         Company company = companyService.getCompanyById(companyId);
 
-        return companyModelAssembler.toModel(company);
+        CompanyDTO companyDTO = CompanyDTO.builder()
+                .id(company.getId())
+                .email(company.getEmail())
+                .BIN(company.getBIN())
+                .createAt(company.getCreateAt())
+                .updateAt(company.getUpdateAt())
+                .build();
+
+        return companyModelAssembler.toModel(companyDTO);
     }
 
     @GetMapping
-    public CollectionModel<EntityModel<Company>> getCompanies() {
-        List<EntityModel<Company>> companies = companyService.getAllCompanies()
+    public CollectionModel<EntityModel<CompanyDTO>> getCompanies() {
+        List<CompanyDTO> companyDTOS = companyService.getAllCompanies()
+                .stream()
+                .map(company -> CompanyDTO.builder()
+                        .id(company.getId())
+                        .email(company.getEmail())
+                        .BIN(company.getBIN())
+                        .createAt(company.getCreateAt())
+                        .updateAt(company.getUpdateAt())
+                        .build())
+                .toList();
+
+        List<EntityModel<CompanyDTO>> companies = companyDTOS
                 .stream()
                 .map(companyModelAssembler::toModel)
                 .toList();
@@ -58,22 +79,28 @@ public class CompanyController {
     }
 
     @GetMapping("/{companyId}/details")
-    public ResponseEntity<CompanyDetail> getCompanyDetails(@PathVariable Long companyId) {
+    public ResponseEntity<CompanyDetailDTO> getCompanyDetails(@PathVariable Long companyId) {
         CompanyDetail companyDetail = companyService.getCompanyDetail(companyId);
 
-        return ResponseEntity.ok(companyDetail);
+        return ResponseEntity.ok(CompanyDetailDTO.builder()
+                .description(companyDetail.getDescription())
+                .contactEmail(companyDetail.getContactEmail())
+                .build());
     }
 
     @PatchMapping("/{companyId}/details")
     @PreAuthorize("hasRole('ROLE_COMPANY')")
-    public ResponseEntity<CompanyDetail> updateCompanyDetails(
+    public ResponseEntity<CompanyDetailDTO> updateCompanyDetails(
             @PathVariable Long companyId,
             @Valid @RequestBody Map<String, Object> updates,
             @AuthenticationPrincipal UserDetails userDetails) {
         CompanyDetail companyDetail =
                 companyService.updateCompanyDetail(companyId, updates, userDetails.getUsername());
 
-        return ResponseEntity.ok(companyDetail);
+        return ResponseEntity.ok(CompanyDetailDTO.builder()
+                .description(companyDetail.getDescription())
+                .contactEmail(companyDetail.getContactEmail())
+                .build());
     }
 
     @GetMapping("/{companyId}/vacancies")
