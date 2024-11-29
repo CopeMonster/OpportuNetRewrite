@@ -38,6 +38,6 @@ public class News {
 
     @PreUpdate
     public void onUpdate() {
-        updateAt = LocalDateTime.now()
+        updateAt = LocalDateTime.now();
     }
 }
